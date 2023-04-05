@@ -10,7 +10,7 @@ branches:
 build: off  
 
 environment:
-  APPVEYOR_JOB_TIMEOUT: 120
+  APPVEYOR_JOB_TIMEOUT: 600
 
 before_build:
   - docker-compose up --build -d
