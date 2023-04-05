@@ -9,9 +9,6 @@ branches:
 
 build: off  
 
-environment:
-  APPVEYOR_JOB_TIMEOUT: 600
-
 before_build:
   - docker-compose up --build -d
 
@@ -24,5 +21,7 @@ after_test:
   - docker-compose down
 
 install:
-  
+
+- docker-compose up -d
+- sleep 60  
 - java -jar ./artifacts/aqa-shop.jar &
