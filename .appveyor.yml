@@ -9,9 +9,11 @@ branches:
 
 build: off  
 
+environment:
+  APPVEYOR_JOB_TIMEOUT: 120
+
 before_build:
   - docker-compose up --build -d
-  - timeout: 60
 
 
 build_script:
