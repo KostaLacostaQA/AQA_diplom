@@ -15,6 +15,8 @@ build: off
 
 
 build_script:
+  - docker-compose up -d
+  - timeout /t 10
   - chmod +x gradlew
   - ./gradlew test --info -Dselenide.headless=true
 
