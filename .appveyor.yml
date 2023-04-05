@@ -9,9 +9,11 @@ branches:
 
 build: off  
 
+- cmd: |
+    mysqld &
+
 
 build_script:
-  - docker-compose up -d
   - chmod +x gradlew
   - ./gradlew test --info -Dselenide.headless=true
 
