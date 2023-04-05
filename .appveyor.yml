@@ -9,8 +9,8 @@ branches:
 
 build: off  
 
-- cmd: |
-    mysqld &
+cmd: 
+  - mysqld &
 
 
 build_script:
