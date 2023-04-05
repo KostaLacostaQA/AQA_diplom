@@ -2,9 +2,6 @@ image: Ubuntu
 
 stack: jdk 11  
 
-services: 
-
-  - mysql
 
 branches:
   only:
@@ -12,10 +9,15 @@ branches:
 
 build: off  
 
-install:
-  
-  - java -jar ./artifacts/aqa-shop.jar &
+- cmd:
+    docker-compose up -d
+    timeout /t 10
+
 
 build_script:
   - chmod +x gradlew
   - ./gradlew test --info -Dselenide.headless=true
+
+install:
+  
+- java -jar ./artifacts/aqa-shop.jar &
