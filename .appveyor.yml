@@ -9,10 +9,6 @@ branches:
 
 build: off  
 
-- cmd:
-    docker-compose up -d
-    timeout /t 10
-
 
 build_script:
   - docker-compose up -d
