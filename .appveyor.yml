@@ -23,5 +23,5 @@ after_test:
 install:
 
 - docker-compose up -d
-- sleep 60  
+- sleep 30
 - java -jar ./artifacts/aqa-shop.jar &

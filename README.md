@@ -6,7 +6,7 @@
 
 # Название проекта 
 
-Веб-сервис **Путешувствие дня** для покупки и просмотра туров. Оформить можно как в покупкой картой, так и в кредит.
+Веб-сервис **Путешевствие дня** для покупки и просмотра туров. Оформить можно как в покупкой картой, так и в кредит.
 
 ## Начало работы
 
@@ -24,3 +24,6 @@
 * Для запуска SUT ввести в терминал `java -jar artifacts/aqa-shop.jar`
 * Для запуска тестов ввести команду `./gradlew clean test`
 * Для генерании отчёта **Allure** ввести команду `./gradlew allureServe`
+
+
+[![Build status](https://ci.appveyor.com/api/projects/status/0dwy7lut7tlo8il4?svg=true)](https://ci.appveyor.com/project/konstantinDukov423/aqa-diplom)
