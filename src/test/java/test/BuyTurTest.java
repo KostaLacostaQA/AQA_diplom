@@ -1,433 +1,316 @@
 package test;
 
-import data.DateHelper;
+import data.DBInteraction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import page.MainPage;
+
+import static data.DateHelper.*;
 
 public class BuyTurTest extends SetUp {
 
     @Test
     @DisplayName("Payment by card. Successful payment by card with APPROVED status")
     void successfulPaymentAPPROVED() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldSuccessfully();
-        main.shouldAPPROVED();
+        main.inputNumbCard(cardInfo);
+        main.shouldSuccessfully("Операция одобрена Банком");
+        Assertions.assertEquals("APPROVED", DBInteraction.checkUser());
     }
 
     @Test
     @DisplayName("Payment by card. Reject card purchase with DECLINED status")
     void noAccessPaymentDECLINED() {
-        var validNumbCard = DateHelper.NumbCard.numbCardDeclined();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardDeclined(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldNoAccess();
-        main.shouldDECLINED();
+        main.inputNumbCard(cardInfo);
+        main.shouldNoAccess("Ошибка! Банк отказал в проведении операции.");
+        Assertions.assertEquals("DECLINED", DBInteraction.checkUser());
     }
 
     @Test
     @DisplayName("Payment by card. Enter Latin letters in the Card Number field")
     void enterLatinLettersInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardLatinLetters();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardLatinLetters(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorNumbCard();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorNumbCard("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering special characters in the Card Number field")
     void enterSpecialCharactersInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardSpecialCharset();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(charactersField(16), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorNumbCard();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorNumbCard("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering one digit in the Card Number field")
     void enterOneDigitInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardSingleNumb();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(oneNumberField(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorNumbCard();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorNumbCard("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Enter 17 digits in the Card Number field")
     void enterMoreNumbsInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardMoreNumbers();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardMoreNumbers(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldNoAccess();
+        main.inputNumbCard(cardInfo);
+        main.shouldNoAccess("Ошибка! Банк отказал в проведении операции.");
     }
 
     @Test
     @DisplayName("Payment by card. Enter 16 zeros in the Card Number field")
     void enterMoreZeroInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardMoreZeroNumb();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardMoreZeroNumb(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldNoAccess();
+        main.inputNumbCard(cardInfo);
+        main.shouldNoAccess("Ошибка! Банк отказал в проведении операции.");
     }
 
     @Test
     @DisplayName("Payment by card. Sending an empty field Card number")
     void noEnterInNumbCard() {
-        var validNumbCard = DateHelper.NumbCard.numbCardNothing();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(nothingField(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorNumbCard();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorNumbCard("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Enter Latin letters in the Month field")
     void enterLatinLettersInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthLatinLetters();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), latinLetters(2), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Enter two zeros in the Month field")
     void enterTwoZeroInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthTwoZero();
-        var validYear = DateHelper.Year.yearOneMore();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthTwoZero(), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверно указан срок действия карты");
     }
 
     @Test
     @DisplayName("Payment by card. Enter the number 13 in the Month field")
     void enterThirteenNumbInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthThirteen();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthThirteen(), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorShelfLifeMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверно указан срок действия карты");
     }
 
     @Test
     @DisplayName("Payment by card. Entering three digits in the Month field")
     void enterThreeNumbsInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthThreeNumbers();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthThreeNumbers(), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorShelfLifeMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверно указан срок действия карты");
     }
 
     @Test
     @DisplayName("Payment by card. Entering special characters in the Month field")
     void enterSpecialCharactersInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthSpecialCharset();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), charactersField(2), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Sending an empty field Month")
     void noEnterInMonth() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthNothing();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), nothingField(), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorMonth();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorMonth("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Enter a year in the Year field that is 5 years older than the current year")
     void enterFiveMoreInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearFiveMore();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(5, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldSuccessfully();
-        main.shouldAPPROVED();
+        main.inputNumbCard(cardInfo);
+        main.shouldSuccessfully("Операция одобрена Банком");
+        Assertions.assertEquals("APPROVED", DBInteraction.checkUser());
     }
 
     @Test
     @DisplayName("Payment by card. Enter a year in the Year field that is 6 years older than the current year")
     void enterSixMoreInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearSixMore();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(6, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorShelfLifeYear();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorYear("Неверно указан срок действия карты");
     }
 
     @Test
     @DisplayName("Payment by card. Enter the year in the Year field, which is 1 year less than the current year")
     void enterOneLessInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearLessOne();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(-1, "yy"), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorExpiredYear();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorYear("Истёк срок действия карты");
     }
 
     @Test
     @DisplayName("Payment by card. Enter Latin letters in the Year field")
     void enterLatinLettersInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearLatinLetters();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), latinLetters(2), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorYear();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorYear("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering one digit in the Year field")
     void enterOneDigitInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearOneNumb();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), oneNumberField(), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorYear();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorYear("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Sending an empty field Year")
     void noEnterInYear() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearNothing();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), nothingField(), monthValid(0, "MM"), ownerName("en"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorYear();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorYear("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering Cyrillic letters in the Owner field")
     void enterCyrillicInOwner() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerNameCyrillic();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("ru"), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorOwner("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering numbers in the Owner field")
     void enterNumbsInOwner() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerMoreNumbers();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerMoreNumbers(), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorOwner("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering special characters in the Owner field")
     void enterCharactersInOwner() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerMoreCharset();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), charactersRandomOwner(), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorOwner("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Sending an empty field Owner")
     void noEnterInOwner() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcValid();
-        var validOwner = DateHelper.Owner.ownerNothing();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), nothingField(), cvcValid());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorRequiredToCompleteOwner();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorOwner("Поле обязательно для заполнения");
     }
 
     @Test
     @DisplayName("Payment by card. Enter Latin letters in the CVC/CVV field")
     void enterLatinLettersInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcLatinLetter();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), latinLetters(3));
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorCVC("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering 4 digits in the CVC/CVV field")
     void enterFourNumbsInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcFourNumb();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcFourNumb());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldSuccessfully();
-        main.shouldAPPROVED();
+        main.inputNumbCard(cardInfo);
+        main.shouldSuccessfully("Операция одобрена Банком");
+        Assertions.assertEquals("APPROVED", DBInteraction.checkUser());
     }
 
     @Test
     @DisplayName("Payment by card. Entering one digit in the CVC/CVV field")
     void enterOneNumbInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcOneNumb();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), oneNumberField());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorCVC("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Enter 3 zeros in the CVC/CVV field")
     void enterThreeZeroInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcThreeZero();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), cvcThreeZero());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorCVC("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Entering special characters in the CVC/CVV field")
     void enterCharactersInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcCharset();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), charactersField(3));
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorCVC("Неверный формат");
     }
 
     @Test
     @DisplayName("Payment by card. Sending an empty CVC/CVV field")
     void noEnterInCVC() {
-        var validNumbCard = DateHelper.NumbCard.numbCardApproved();
-        var validMonth = DateHelper.Month.monthValid();
-        var validYear = DateHelper.Year.yearValid();
-        var validCVC = DateHelper.CVC.cvcNothing();
-        var validOwner = DateHelper.Owner.ownerName();
 
+        CardInfo cardInfo = new CardInfo(numbCardApproved(), yearDate(0, "yy"), monthValid(0, "MM"), ownerName("en"), nothingField());
         MainPage main = new MainPage();
-        main.inputNumbCard(validNumbCard, validMonth, validYear, validOwner, validCVC);
-        main.shouldErrorCVC();
+        main.inputNumbCard(cardInfo);
+        main.shouldErrorCVC("Неверный формат");
     }
 }
